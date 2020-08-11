@@ -5,7 +5,7 @@ from ij.gui import ImageCanvas, GenericDialog
 from ij.io import FileSaver
 from ij.plugin import ScreenGrabber
 from javax.swing import JFrame, JButton
-from java.awt import GridLayout
+from java.awt import GridLayout, Rectangle, Dimension
 
 class Image():
 	""" Class for images to link views
@@ -30,38 +30,72 @@ class Image():
 		self.ID = self.imp.getID()
 		self.canvas = self.imp.getCanvas()
 		self.window = self.imp.getWindow()
+		self.calibration = self.imp.getCalibration()
+		self.units = self.calibration.getUnit()
 		IJ.log("Loaded image " + self.imp.getTitle())
+		window_size_pixels = self.window.getSize()
+		window_width_physical = self.calibration.getX(window_size_pixels.width)
+		window_height_physical = self.calibration.getY(window_size_pixels.height)
+		print([window_width_physical, window_height_physical])
 
 	def getWindowSize(self):
-		""" Gets window size of current window from ImageWindow """
-		return self.window.getSize() # java.awt.Dimension object [width, height]
-	
-	def getView(self):
-		""" Gets source rectangle of current view from ImageCanvas """
-		return self.canvas.getSrcRect() # java.awt.Rectangle object
+		""" Gets window size in pixel units of current window from ImageWindow """
+		return self.window.getSize()
 
 	def matchWindowSizes(self, ref_window_size):
 		""" Matches window dimensions to the reference image
 
 		Parameters
 		----------
-		ref : java.awt.Dimension
-			Dimension [width, height] of ImageWindow to resize to
+		ref_window_size : list
+			Dimension [width, height] of ImageWindow to resize to in physical units
 		
 		"""
 		self.window.setSize(ref_window_size)
+
+	def getViewPhysicalUnits(self):
+		""" Gets source rectangle in physical units 
+
+		Returns
+		-------
+		list
+			Contains x, y, width, height as doubles
+		"""
+		height = self.calibration.getY(self.canvas.getSrcRect().height)
+		width = self.calibration.getX(self.canvas.getSrcRect().width)
+		x = self.calibration.getX(self.canvas.getSrcRect().x)
+		y = self.calibration.getY(self.canvas.getSrcRect().y)
+		return [x, y, width, height]
+
+	def transformRefView(self, ref):
+		""" Transforms ref src_rect from physical units to pixels 
+		
+		Parameters
+		----------
+		ref : list
+			Rectangle (x, y, width, height) to display. x and y are coordinates of
+			upper-left corner of the Rectangle. ref is in physical units.
+			
+		"""
+		x = int(self.calibration.getRawX(ref[0]))
+		y = int(self.calibration.getRawY(ref[1]))
+		width = int(self.calibration.getRawX(ref[2]))
+		height = int(self.calibration.getRawY(ref[3]))
+
+		return Rectangle(x, y, width, height)
 	
 	def updateView(self, ref):
 		""" Sets display to ref src_rect
 
 		Parameters
 		----------
-		ref : java.awt.Rectangle
-			Rectangle (height, width, x, y) to display. x and y are coordinates of
-			upper-left corner of the Rectangle
+		ref : list
+			Rectangle (x, y, width, height) to display. x and y are coordinates of
+			upper-left corner of the Rectangle. ref is in physical units.
 
 		"""
-		self.canvas.setSourceRect(ref)
+		ref_px_units = self.transformRefView(ref)
+		self.canvas.setSourceRect(ref_px_units)
 		self.imp.updateAndDraw()
 
 class LinkedView():
@@ -116,11 +150,11 @@ class LinkedView():
 		is pressed
 		"""
 		self.checkImages()
-		ref_window_size = self.ref_image.getWindowSize() # java.awt.Dimension object
-		ref_src_rect = self.ref_image.getView() # java.awt.Rectangle object
+		ref_window_size = self.ref_image.getWindowSize() # [width, height] in physical units
+		ref_src_rect = self.ref_image.getViewPhysicalUnits() # java.awt.Rectangle object
 		for Image in self.Images.values(): # updates all Image instances
 			Image.updateView(ref_src_rect)
-			Image.matchWindowSizes(ref_window_size) # why does this not work when making images larger
+			Image.matchWindowSizes(ref_window_size)
 
 	def exportView(self, event):
 		""" Export current view of all images as individual tiffs when 
@@ -147,7 +181,10 @@ class LinkedView():
 		for Image in self.Images.values(): # for all Image instances
 			IJ.selectWindow(Image.ID)
 			screengrab = ScreenGrabber().captureImage()
-			FileSaver(screengrab).saveAsTiff(os.path.join(export_dir, current_datetime, Image.title))
+			filename = os.path.join(export_dir, current_datetime, Image.title)
+			if os.path.splitext(filename)[1] != ".tif":
+				os.path.join(filename, ".tif")
+			FileSaver(screengrab).saveAsTiff(filename)
 			IJ.log("Image saved: " + os.path.join(current_export_dir, Image.title))
 	
 	def UI(self):
