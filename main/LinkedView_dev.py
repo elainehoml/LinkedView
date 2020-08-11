@@ -4,6 +4,7 @@ from ij import WindowManager as WM
 from ij.gui import ImageCanvas, GenericDialog
 from ij.io import FileSaver
 from ij.plugin import ScreenGrabber
+from ij.plugin.frame import RoiManager as RM
 from javax.swing import JFrame, JButton
 from java.awt import GridLayout, Rectangle, Dimension
 
@@ -33,10 +34,6 @@ class Image():
 		self.calibration = self.imp.getCalibration()
 		self.units = self.calibration.getUnit()
 		IJ.log("Loaded image " + self.imp.getTitle())
-		window_size_pixels = self.window.getSize()
-		window_width_physical = self.calibration.getX(window_size_pixels.width)
-		window_height_physical = self.calibration.getY(window_size_pixels.height)
-		print([window_width_physical, window_height_physical])
 
 	def getWindowSize(self):
 		""" Gets window size in pixel units of current window from ImageWindow """
@@ -156,6 +153,32 @@ class LinkedView():
 			Image.updateView(ref_src_rect)
 			Image.matchWindowSizes(ref_window_size)
 
+	def createExportDir(self, export_name):
+		""" Creates export directory 
+
+		Parameters
+		----------
+		export_name : str
+			Name of folder. i.e. <img directory>/<export_name>
+
+		Returns
+		-------
+		current_export_dir : str, path-like
+			Path to export directory <img_directory>/<export_name>/<current_datetime>
+			
+		"""
+		IJ.selectWindow(self.ref_image.ID) # make ref image active window
+		current_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+		export_dir = os.path.join(IJ.getDir("image"), export_name)
+		if os.path.isdir(export_dir) == False:
+			IJ.log("Created export directory: " + export_dir)
+			os.mkdir(export_dir)
+		current_export_dir = os.path.join(export_dir, current_datetime)
+		os.mkdir(current_export_dir)
+		IJ.log("Currently exporting to: " + current_export_dir)
+
+		return current_export_dir
+	
 	def exportView(self, event):
 		""" Export current view of all images as individual tiffs when 
 		export_view button is pressed
@@ -167,37 +190,56 @@ class LinkedView():
 		These images can be loaded into FigureJ for figure making
 		"""
 		# Create export dir, if not already present
-		IJ.selectWindow(self.ref_image.ID) # make ref image current active window
-		current_datetime = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-		export_dir = os.path.join(IJ.getDir("image"), "LV_export")
-		if os.path.isdir(export_dir) == False:
-			IJ.log("Created export directory: " + export_dir)
-			os.mkdir(export_dir)
-		current_export_dir = os.path.join(export_dir, current_datetime)
-		os.mkdir(current_export_dir)
-		IJ.log("Currently exporting to: " + current_export_dir)
+		current_export_dir = self.createExportDir("LV_export")
 
 		# Save image
 		for Image in self.Images.values(): # for all Image instances
 			IJ.selectWindow(Image.ID)
 			screengrab = ScreenGrabber().captureImage()
-			filename = os.path.join(export_dir, current_datetime, Image.title)
+			filename = os.path.join(current_export_dir, Image.title)
 			if os.path.splitext(filename)[1] != ".tif":
 				os.path.join(filename, ".tif")
 			FileSaver(screengrab).saveAsTiff(filename)
 			IJ.log("Image saved: " + os.path.join(current_export_dir, Image.title))
+
+	def saveCroppedROIs(self, event):
+		""" Duplicates cropped ROIs and saves """
+		# Create export dir, if not already present
+		current_export_dir = self.createExportDir("Cropped_ROI")
+		
+		for Image in self.Images.values(): # for all Image instances
+			# save image
+			cropped_copy = Image.imp.crop() # returns cropped image as an imp
+			img_filename = os.path.join(current_export_dir, Image.title)
+			if os.path.splitext(img_filename)[1] != ".tif":
+				os.path.join(img_filename, ".tif")
+			FileSaver(cropped_copy).saveAsTiff(img_filename)
+
+			# save roi
+			roi_filename = os.path.splitext(img_filename)[0] + "_roi.roi"
+			roi = Image.imp.getRoi()
+			if roi != None:
+				rm = RM.getInstance()
+				if rm == None:
+					rm = RM()
+				rm.addRoi(roi)
+				rm.runCommand("Save", roi_filename) # which one does it save
+				rm.runCommand("Delete")
+			IJ.log("Cropped ROI saved: " + os.path.join(current_export_dir, Image.title))
 	
 	def UI(self):
 		""" User interface for LinkedView """
 		frame = JFrame("LinkedView")
 		frame.setSize(300,200)
-		frame.setLayout(GridLayout(3,1))
+		frame.setLayout(GridLayout(4,1))
 		link_view = JButton("Link Views", actionPerformed = self.linkView)
 		get_ref = JButton("Update Reference Image", actionPerformed = self.getRef)
 		export_view = JButton("Export Views", actionPerformed = self.exportView)
+		crop_ROIs = JButton("Export Cropped ROIs", actionPerformed = self.saveCroppedROIs)
 		frame.add(link_view)
 		frame.add(get_ref)
 		frame.add(export_view)
+		frame.add(crop_ROIs)
 		frame.setVisible(True)
 
 launch = LinkedView()
