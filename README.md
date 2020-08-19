@@ -10,7 +10,7 @@ This video shows how to install and run LinkedView, and demonstrates how LinkedV
 
 ## Installation
 
-Download [Fiji/ImageJ](https://imagej.net/Fiji/Downloads). Download this repository and place LinkedView_.py into your Fiji plugins folder. Restart Fiji and LinkedView will be in the Plugins menu of your Fiji/ImageJ installation.
+Download [Fiji/ImageJ](https://imagej.net/Fiji/Downloads). Download this repository and place LinkedView_.py into your Fiji plugins folder. LinkedView_.py can be found in the ```main/``` directory. Restart Fiji and LinkedView will be in the Plugins menu of your Fiji/ImageJ installation.
 
 ## Preparing your images
 
@@ -48,7 +48,7 @@ Use [Sync Windows](https://imagej.net/Sync_Windows) to annotate all images at on
 
 ## Support
 
-Report bugs and request features by raising an issue on the [issue tracker](https://github.com/elainehoml/LinkedView/issues).
+Report bugs and request features by raising an issue on the [issue tracker](https://github.com/elainehoml/LinkedView/issues). This version of LinkedView (19-Aug-2020) was tested on (Fiji Is Just) ImageJ 2.0.0-rc-69/1.53c.
 
 ## Cite us
 
