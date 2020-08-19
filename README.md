@@ -1,37 +1,55 @@
-## Welcome to GitHub Pages
+# LinkedView
 
-You can use the [editor on GitHub](https://github.com/elainehoml/LinkedView/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+A [Fiji/ImageJ](https://imagej.net/Fiji) plugin for intuitive visualisation and shared annotation of correlative image datasets. Users can interactively explore matching regions in correlative images, annotate these images and transfer annotations between imaging modalities. The annotated regions can be saved individually.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Demo
 
-### Markdown
+This video shows how to install and run LinkedView, and demonstrates how LinkedView helps you explore correlative image datasets. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Installation
 
-```markdown
-Syntax highlighted code block
+Download [Fiji/ImageJ](https://imagej.net/Fiji/Downloads). Download this repository and place LinkedView_.py into your Fiji plugins folder. Restart Fiji and LinkedView will be in the Plugins menu of your Fiji/ImageJ installation.
 
-# Header 1
-## Header 2
-### Header 3
+## Preparing your images
 
-- Bulleted
-- List
+Any images supported in Fiji/ImageJ can be used with LinkedView. Please ensure that pixel/voxel sizes are set to physical units and that there are no significant deformations between images. Image deformations can be corrected by registration. Here is a (non-exhaustive) list of examples of software for you to do this:
 
-1. Numbered
-2. List
+* [Elastix](https://elastix.lumc.nl/) - if you're comfortable with scripting
+* [BigWarp](https://imagej.net/BigWarp) - manual landmark based registration
+* [bUnwarpJ](https://imagej.net/BUnwarpJ)
+* [Correlia](https://onlinelibrary.wiley.com/doi/full/10.1111/jmi.12928)
+* [List of Python projects for image registration](http://pyimreg.github.io/) - if you're a Python user
 
-**Bold** and _Italic_ and `Code` text
+## Running LinkedView
 
-[Link](url) and ![Image](src)
-```
+Once your images are open in Fiji, start LinkedView by clicking on LinkedView in the Plugins menu. Some error messages may show up in the console but these can be ignored. The LinkedView menu will appear.
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### Link Views
 
-### Jekyll Themes
+This button matches the displayed regions in all images.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/elainehoml/LinkedView/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+#### Update reference image
 
-### Support or Contact
+LinkedView matches all images to the displayed region of the reference image. 
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+#### Export Views
+
+Export views screenshots each open image in its current view, including any selected regions. Please ensure that there are no other windows on the screen area covered by the images, as these will be included in the screenshot. Screenshots will be saved in the same directory as your images, under the LV_export/<date>_<time> folder. The export directory is printed in the Log window.
+  
+#### Export cropped ROIs
+
+Export cropped ROIs saves the image data in each selection at its native resolution. If the image is a stack, only the selection in the current slice will be saved. The locations of these ROIs are also saved which can be imported into ROI Manager later.
+
+#### Transferring annotations between images
+
+Use [Sync Windows](https://imagej.net/Sync_Windows) to annotate all images at once. Run Sync Windows by clicking Analyze > Tools > Sync Windows, ensure that all the checkboxes are ticked and click Synchronize All. 
+
+## Support
+
+Report bugs and request features by raising an issue on the [issue tracker](https://github.com/elainehoml/LinkedView/issues).
+
+## Cite us
+
+This work was supported by the Engineering and Physical Sciences Research Council (EPSRC), UK and the Institute for Life Sciences, University of Southampton, UK.
+
+If you found this helpful, please cite us:
