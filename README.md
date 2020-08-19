@@ -4,7 +4,9 @@ A [Fiji/ImageJ](https://imagej.net/Fiji) plugin for intuitive visualisation and 
 
 ## Demo
 
-This video shows how to install and run LinkedView, and demonstrates how LinkedView helps you explore correlative image datasets. 
+This video shows how to install and run LinkedView, and demonstrates how LinkedView helps you explore correlative image datasets.
+
+[![LinkedView Demo Video](LinkedView_Demo_Thumbnail.JPG)](https://youtu.be/zJYk_rE0DdI "LinkedView Demo")
 
 ## Installation
 
