@@ -1,5 +1,7 @@
 # LinkedView
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3996281.svg)](https://doi.org/10.5281/zenodo.3996281)
+
 A [Fiji/ImageJ](https://imagej.net/Fiji) plugin for intuitive visualisation and shared annotation of correlative image datasets. Users can interactively explore matching regions in correlative images, annotate these images and transfer annotations between imaging modalities. The annotated regions can be saved individually.
 
 ## Demo
@@ -55,3 +57,5 @@ Report bugs and request features by raising an issue on the [issue tracker](http
 This work was supported by the Engineering and Physical Sciences Research Council (EPSRC), UK and the Institute for Life Sciences, University of Southampton, UK.
 
 If you found this helpful, please cite us:
+
+Elaine M. L. Ho, Orestis L. Katsamenis, Gareth J. Thomas, Peter M. Lackie, & Philipp Schneider. (2020, August 22). LinkedView: A Fiji/ImageJ Plugin for Visualisation and Annotation of Correlative Images (Version v1.0.0-alpha). Zenodo. http://doi.org/10.5281/zenodo.3996281
