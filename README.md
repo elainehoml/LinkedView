@@ -59,3 +59,18 @@ This work was supported by the Engineering and Physical Sciences Research Counci
 If you found this helpful, please cite us:
 
 Elaine M. L. Ho, Orestis L. Katsamenis, Gareth J. Thomas, Peter M. Lackie, & Philipp Schneider. (2020, August 22). LinkedView: A Fiji/ImageJ Plugin for Visualisation and Annotation of Correlative Images (Version v1.0.0-alpha). Zenodo. http://doi.org/10.5281/zenodo.3996281
+
+## Notes
+
+#### 28th Aug 2020: Installation not working?
+
+If LinkedView does not run on your version of Fiji, please raise an issue on the [issue tracker](https://github.com/elainehoml/LinkedView/issues). Alternatively, for a 'plug-and-play' experience you can download [this LinkedView release](https://github.com/elainehoml/LinkedView/releases/tag/v1.0.1-alpha) which comes with Fiji (for Windows) with LinkedView pre-installed under 'Plugins'.
+
+#### 28th Aug 2020: Console errors when running LinkedView
+
+The error "console: Failed to install '': java.nio.charset.UnsupportedCharsetException: cp0." appears after running LinkedView (it is a Jython script), but LinkedView still works. You can ignore this error message. If you would like to stop it entirely, modify/create the file jvm.cfg in the same directory as the Fiji launcher and adding the following:
+``` -Dpython.console.encoding=UTF-8 ```
+
+References: [This Github issue](https://github.com/StuartLab/MiNA/issues/13) and [this image.sc forum post](https://forum.image.sc/t/script-editor-error-when-working-with-python-scripts/5893)
+
+Thanks to OLK for sorting this!
